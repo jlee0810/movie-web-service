@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
-
+import React, { useState, useEffect } from "react";
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [coins, setCoins] = useState([]);
+
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    fetch("https://api.coinpaprika.com/v1/tickers")
+      .then((response) => response.json())
+      .then((json) => {
+        setCoins(json);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>The Coin Converter!</h1>
+      {loading ? <strong>Loading...</strong> : <div>Loaded!</div>}
+
+      <h2>
+        Your balance: $ <input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} />
+      </h2>
+
+      <select>
+        {coins.map((coin) => (
+          <option>
+            {coin.name} ({coin.symbol}) {balance / coin.quotes.USD.price}{" "}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
-
 export default App;
